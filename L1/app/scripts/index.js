@@ -5,7 +5,6 @@ let currentImageProcessor;
 
 let init = () => {
   initImage(1, 'mainImage');
-
 };
 
 let initImage = (imgIndex, elemId) => {
@@ -18,8 +17,8 @@ let initImage = (imgIndex, elemId) => {
     canvas.width = imageObj.width;
     context.drawImage(imageObj, 0, 0);
     currentImageProcessor = new ImageProcessor(canvas);
-
-    console.log(currentImageProcessor);
+    document.getElementById('filterButton').addEventListener('click', currentImageProcessor.filterImage.bind(currentImageProcessor));
+    document.getElementById('incrementalProcessingButton').addEventListener('click', currentImageProcessor.processImageIncrementally.bind(currentImageProcessor));
   };
 
   imageObj.src = '../../data/img' + imgIndex + '.jpg';
