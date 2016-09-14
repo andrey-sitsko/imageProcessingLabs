@@ -1,0 +1,14 @@
+{
+  "name": "l1",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chart.js": "^2.2.2",
+    "webpack": "^1.13.2"
+  }
+}
