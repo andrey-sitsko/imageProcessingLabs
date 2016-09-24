@@ -1,19 +1,23 @@
-.container {
+.mainContainer {
   position: relative;
   text-align: center;
   margin: 0 auto;
   width: 900px;
 }
 
-.filterButton {
+.navButton {
   margin: 0 10px 20px 0;
-  border-color: transparent;
+  border-radius: 10px;
+  border: 2px solid rgb(0, 0, 0);
   height: 40px;
-  font-size: 21px;
-  width: 250px;
-  background-color: rgb(153, 204, 255);
+  font-size: 18px;
+  width: 200px;
   transition: background-color 0.3s;
   outline: 0;
+}
+
+.filterButton {
+  background-color: rgb(153, 204, 255);
 }
 
 .filterButton:hover {
@@ -21,8 +25,19 @@
   color: rgb(255, 255, 255);
 }
 
+.restoreButton {
+  background-color: rgb(255, 153, 153);
+}
+
+.restoreButton:hover {
+  background-color: rgb(179, 0, 0);
+  color: rgb(255, 255, 255);
+}
+
 .navContainer {
   width: 100%;
+  margin-bottom: 50px;
+  text-align: center;
 }
 
 .inputContainer {

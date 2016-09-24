@@ -4,7 +4,7 @@ const Chart = require('chart.js'),
 let currentImageProcessor;
 
 let init = () => {
-  initImage(1, 'mainImage');
+  initImage(2, 'mainImage');
 };
 
 let initImage = (imgIndex, elemId) => {
@@ -17,11 +17,30 @@ let initImage = (imgIndex, elemId) => {
     canvas.width = imageObj.width;
     context.drawImage(imageObj, 0, 0);
     currentImageProcessor = new ImageProcessor(canvas);
-    document.getElementById('minFilterButton').addEventListener('click', currentImageProcessor.applyMinFilter.bind(currentImageProcessor));
-    document.getElementById('restoreImageButton').addEventListener('click', currentImageProcessor.restoreOriginalImage.bind(currentImageProcessor));
-    /*document.getElementById('maxFilterButton').addEventListener('click', currentImageProcessor.applyMaxFilter.bind(currentImageProcessor));
-    document.getElementById('minMaxFilterButton').addEventListener('click', currentImageProcessor.applyMinMaxFilter.bind(currentImageProcessor));
-    document.getElementById('incrementalProcessingButton').addEventListener('click', currentImageProcessor.processImageIncrementally.bind(currentImageProcessor));*/
+
+    document.getElementById('minFilterButton').addEventListener('click', () => {
+      currentImageProcessor.applyMinFilter();
+    });
+
+    document.getElementById('maxFilterButton').addEventListener('click', () => {
+      currentImageProcessor.applyMaxFilter();
+    });
+
+    document.getElementById('minMaxFilterButton').addEventListener('click', () => {
+      currentImageProcessor.applyMinMaxFilter();
+    });
+
+    document.getElementById('restoreImageButton').addEventListener('click', () => {
+      currentImageProcessor.restoreOriginalImage();
+    });
+
+    document.getElementById('dPreparationButton').addEventListener('click', () => {
+      currentImageProcessor.applyDPreparation(150, 200);
+    });
+
+    document.getElementById('ePreparationButton').addEventListener('click', () => {
+      currentImageProcessor.applyEPreparation(150, 200);
+    });
   };
 
   imageObj.src = '../../data/img' + imgIndex + '.jpg';
