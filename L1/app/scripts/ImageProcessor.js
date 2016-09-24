@@ -108,40 +108,6 @@ module.exports = class ImageProcessor {
     this.context.putImageData(this.imageData, 0, 0);
   }
 
-  /*
-    private Color preparation_E(int x, int y)                                   //Препарирование по алгоритму E
-    {
-        Color currentPixel = new Color();
-
-        currentPixel = preventBitmap.GetPixel(x, y);
-
-        return Color.FromArgb(
-            func_E(currentPixel.R),
-            func_E(currentPixel.G),
-            func_E(currentPixel.B)
-        );
-    }
-
-    byte func_E(byte i)                                                         //Алгоритм 'Е'
-{
-    byte min = byte.Parse(this.textBox1.Text);
-    byte max = byte.Parse(this.textBox2.Text);
-
-    if (i <= min)
-        return 0;
-    if (i >= max)
-        return 255;
-    if (i > min && i < max)
-    {
-        byte rezult = (byte)(255 * (float)(i - min) / (float)(max-min));
-        return rezult;
-    }
-    return 0;
-
-}
-
-  */
-
   _getPixelNeiboursColorChannels(pixelIndex, currentColorData, imageColorData) {
     let imageWidth = this.canvas.width,
         redChannel = [],

@@ -18,28 +18,30 @@ let initImage = (imgIndex, elemId) => {
     context.drawImage(imageObj, 0, 0);
     currentImageProcessor = new ImageProcessor(canvas);
 
-    document.getElementById('minFilterButton').addEventListener('click', () => {
+    document.getElementById('minFilterButton').addEventListener('click', (event) => {
       currentImageProcessor.applyMinFilter();
     });
 
-    document.getElementById('maxFilterButton').addEventListener('click', () => {
+    document.getElementById('maxFilterButton').addEventListener('click', (event) => {
       currentImageProcessor.applyMaxFilter();
     });
 
-    document.getElementById('minMaxFilterButton').addEventListener('click', () => {
+    document.getElementById('minMaxFilterButton').addEventListener('click', (event) => {
       currentImageProcessor.applyMinMaxFilter();
     });
 
-    document.getElementById('restoreImageButton').addEventListener('click', () => {
+    document.getElementById('restoreImageButton').addEventListener('click', (event) => {
       currentImageProcessor.restoreOriginalImage();
     });
 
-    document.getElementById('dPreparationButton').addEventListener('click', () => {
-      currentImageProcessor.applyDPreparation(150, 200);
+    document.getElementById('dPreparationForm').addEventListener('submit', (event) => {
+      event.preventDefault();
+      currentImageProcessor.applyDPreparation(parseInt(document.getElementById('dMin').value), parseInt(document.getElementById('dMax').value));
     });
 
-    document.getElementById('ePreparationButton').addEventListener('click', () => {
-      currentImageProcessor.applyEPreparation(150, 200);
+    document.getElementById('ePreparationForm').addEventListener('submit', (event) => {
+      event.preventDefault();
+      currentImageProcessor.applyEPreparation(parseInt(document.getElementById('eMin').value), parseInt(document.getElementById('eMax').value));
     });
   };
 
