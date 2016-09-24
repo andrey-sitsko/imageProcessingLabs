@@ -18,9 +18,9 @@ let initImage = (imgIndex, elemId) => {
     context.drawImage(imageObj, 0, 0);
     currentImageProcessor = new ImageProcessor(canvas);
     document.getElementById('minFilterButton').addEventListener('click', currentImageProcessor.applyMinFilter.bind(currentImageProcessor));
-    document.getElementById('maxFilterButton').addEventListener('click', currentImageProcessor.applyMaxFilter.bind(currentImageProcessor));
+    /*document.getElementById('maxFilterButton').addEventListener('click', currentImageProcessor.applyMaxFilter.bind(currentImageProcessor));
     document.getElementById('minMaxFilterButton').addEventListener('click', currentImageProcessor.applyMinMaxFilter.bind(currentImageProcessor));
-    //document.getElementById('incrementalProcessingButton').addEventListener('click', currentImageProcessor.processImageIncrementally.bind(currentImageProcessor));
+    document.getElementById('incrementalProcessingButton').addEventListener('click', currentImageProcessor.processImageIncrementally.bind(currentImageProcessor));*/
   };
 
   imageObj.src = '../../data/img' + imgIndex + '.jpg';

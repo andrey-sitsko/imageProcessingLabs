@@ -8,9 +8,7 @@ module.exports = class ImageProcessor {
 
   applyMinFilter() {
 
-    let pixelNeibhours,
-        sortedNeibhours,
-        imageWidth = this.canvas.width,
+    let imageWidth = this.canvas.width,
         originalColorData = this.colorData.slice(),
         redChannel,
         greenChannel,
@@ -23,59 +21,28 @@ module.exports = class ImageProcessor {
 
       for(let rawOffset = -1; rawOffset < 2; rawOffset++) {
         for(let pixelOffset = -1; pixelOffset < 2; pixelOffset++) {
-          for(let colorOffset = 0; colorOffset < 3; colorOffset++) {
-            let colorIndex = pixelIndex + imageWidth * rawOffset + pixelOffset + colorOffset;
-            if(colorIndex >= 0) {
-              switch(colorOffset) {
-                case 0:
-                  redChannel.push(originalColorData[colorIndex]);
-                  break;
-                case 1:
-                  greenChannel.push(originalColorData[colorIndex]);
-                  break;
-                case 2:
-                  blueChannel.push(originalColorData[colorIndex]);
-                  break;
-              }
-            } else {
-              redChannel.push(0);
-              greenChannel.push(0);
-              blueChannel.push(0);
-            }
+          let currentPixelIndex = pixelIndex + rawOffset * imageWidth * 4 + pixelOffset * 4;
+          if(currentPixelIndex >= 0 && (currentPixelIndex + 4) <= originalColorData.length) {
+              redChannel.push(originalColorData[currentPixelIndex]);
+              greenChannel.push(originalColorData[currentPixelIndex + 1]);
+              blueChannel.push(originalColorData[currentPixelIndex + 2]);
           }
         }
       }
 
-
-      if((pixelIndex - 1) >= 0) {
-        this.colorData[pixelIndex - 1] = redChannel.sort(function(a, b) {
-          return a - b;
-        })[0];
-      }
-
-      this.colorData[pixelIndex] = greenChannel.sort(function(a, b) {
+      this.colorData[pixelIndex] = redChannel.sort(function(a, b) {
         return a - b;
       })[0];
 
-      if(pixelIndex + 1 < this.colorData.length) {
-        this.colorData[pixelIndex + 1] = blueChannel.sort(function(a, b) {
-          return a - b;
-        })[0];
-      }
+      this.colorData[pixelIndex + 1] = greenChannel.sort(function(a, b) {
+        return a - b;
+      })[0];
+
+      this.colorData[pixelIndex + 2] = blueChannel.sort(function(a, b) {
+        return a - b;
+      })[0];
     }
 
     this.context.putImageData(this.imageData, 0, 0);
-  }
-
-  applyMaxFilter() {
-
-  }
-
-  applyMinMaxFilter() {
-
-  }
-
-  redrawImage() {
-
   }
 };
