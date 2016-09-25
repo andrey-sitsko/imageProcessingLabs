@@ -28,7 +28,11 @@
     </div>
 
     <div class="mainContainer">
-      <canvas id="mainImage" class="mainImage"></canvas>
+      <div class="imageContainer">
+        <span class="leftScroll" id="nextImageScroll">&lt;</span>
+        <canvas id="mainImage"></canvas>
+        <span class="rightScroll" id="prevImageScroll">&gt;</span>
+      </div>
       <div class="chartContainer">
         <canvas class="chart" id="imageBrightnessBar"></canvas>
       </div>

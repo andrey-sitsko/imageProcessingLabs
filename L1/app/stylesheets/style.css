@@ -98,6 +98,26 @@ input[type=number]::-webkit-outer-spin-button {
   margin: auto;
 }
 
-.mainImage {
+.imageContainer {
+  position: relative;
+  display: inline-block;
   margin: 20px;
+}
+
+.leftScroll {
+  font-size: 65px;
+  position: absolute;
+  top: 50%;
+  left: -50px;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.rightScroll {
+  font-size: 65px;
+  position: absolute;
+  top: 50%;
+  right: -50px;
+  transform: translateY(-50%);
+  cursor: pointer;
 }

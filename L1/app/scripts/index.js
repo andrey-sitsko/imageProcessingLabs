@@ -1,14 +1,43 @@
 const Chart = require('chart.js'),
       ImageProcessor = require('./ImageProcessor.js'),
-      BrightnessHystogram = require('./brightnessHystogram');
+      BrightnessHystogram = require('./brightnessHystogram'),
+      images = [
+        'img1.jpg',
+        'img2.jpg',
+        'img3.jpg',
+        'img4.jpg',
+        'img5.jpg',
+        'img6.jpg'
+      ];
 
 let currentImageProcessor,
-    brightnessHystogram;
+    brightnessHystogram,
+    imageIndex = 0;
 
 let init = () => {
-  initImage(1, 'mainImage');
+  initImage(images[imageIndex], 'mainImage');
 
   brightnessHystogram = new BrightnessHystogram(document.getElementById('imageBrightnessBar'));
+
+  document.getElementById('nextImageScroll').addEventListener('click', (event) => {
+    if(imageIndex + 1 >= images.length) {
+      imageIndex = 0;
+    } else {
+      imageIndex = imageIndex + 1;
+    }
+
+    initImage(images[imageIndex], 'mainImage');
+  });
+
+  document.getElementById('prevImageScroll').addEventListener('click', (event) => {
+    if(imageIndex - 1 < 0) {
+      imageIndex = images.length - 1;
+    } else {
+      imageIndex = imageIndex - 1;
+    }
+
+    initImage(images[imageIndex], 'mainImage');
+  });
 
   document.getElementById('minFilterButton').addEventListener('click', (event) => {
     currentImageProcessor.applyMinFilter();
@@ -43,7 +72,7 @@ let init = () => {
   });
 };
 
-let initImage = (imgIndex, elemId) => {
+let initImage = (imgName, elemId) => {
   let canvas = document.getElementById(elemId),
       context = canvas.getContext('2d'),
       imageObj = new Image();
@@ -57,7 +86,7 @@ let initImage = (imgIndex, elemId) => {
     brightnessHystogram.drawBrightnessHystogram(currentImageProcessor.getColorData());
   };
 
-  imageObj.src = '../../data/img' + imgIndex + '.jpg';
+  imageObj.src = '../../data/' + imgName;
 };
 
 init();
