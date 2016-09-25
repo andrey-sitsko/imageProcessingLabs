@@ -6,6 +6,10 @@ module.exports = class ImageProcessor {
     this.originalColorData = this.imageData.data.slice();
   }
 
+  getColorData() {
+    return this.imageData.data;
+  }
+
   applyMinFilter() {
     let imageWidth = this.canvas.width,
         currentColorData = this.imageData.data.slice(),

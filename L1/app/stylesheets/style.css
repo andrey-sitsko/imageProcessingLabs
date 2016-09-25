@@ -85,30 +85,19 @@ input[type=number]::-webkit-outer-spin-button {
   margin: 0;
 }
 
-.inputContainer {
-  position: relative;
-  width: 150px;
-  margin-bottom: 15px;
-}
-
-.inputContainer input {
-  position: absolute;
-  width: 100px;
-  right: 0;
-}
-
 .chart {
-  width: 900px;
+  width: 600px;
   height: 400px;
+  position: relative;
+  z-index: -1;
 }
 
 .chartContainer {
-  text-align: center;
+  width: 600px;
   position: relative;
-  margin: 60px auto;
+  margin: auto;
 }
 
-.chartContainer h3 {
-  font-size: 25px;
-  text-align: center;
+.mainImage {
+  margin: 20px;
 }

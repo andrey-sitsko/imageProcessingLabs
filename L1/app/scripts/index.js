@@ -1,10 +1,46 @@
 const Chart = require('chart.js'),
-      ImageProcessor = require('./ImageProcessor.js');
+      ImageProcessor = require('./ImageProcessor.js'),
+      BrightnessHystogram = require('./brightnessHystogram');
 
-let currentImageProcessor;
+let currentImageProcessor,
+    brightnessHystogram;
 
 let init = () => {
-  initImage(2, 'mainImage');
+  initImage(1, 'mainImage');
+
+  brightnessHystogram = new BrightnessHystogram(document.getElementById('imageBrightnessBar'));
+
+  document.getElementById('minFilterButton').addEventListener('click', (event) => {
+    currentImageProcessor.applyMinFilter();
+    brightnessHystogram.drawBrightnessHystogram(currentImageProcessor.getColorData());
+  });
+
+  document.getElementById('maxFilterButton').addEventListener('click', (event) => {
+    currentImageProcessor.applyMaxFilter();
+    brightnessHystogram.drawBrightnessHystogram(currentImageProcessor.getColorData());
+  });
+
+  document.getElementById('minMaxFilterButton').addEventListener('click', (event) => {
+    currentImageProcessor.applyMinMaxFilter();
+    brightnessHystogram.drawBrightnessHystogram(currentImageProcessor.getColorData());
+  });
+
+  document.getElementById('restoreImageButton').addEventListener('click', (event) => {
+    currentImageProcessor.restoreOriginalImage();
+    brightnessHystogram.drawBrightnessHystogram(currentImageProcessor.getColorData());
+  });
+
+  document.getElementById('dPreparationForm').addEventListener('submit', (event) => {
+    event.preventDefault();
+    currentImageProcessor.applyDPreparation(parseInt(document.getElementById('dMin').value), parseInt(document.getElementById('dMax').value));
+    brightnessHystogram.drawBrightnessHystogram(currentImageProcessor.getColorData());
+  });
+
+  document.getElementById('ePreparationForm').addEventListener('submit', (event) => {
+    event.preventDefault();
+    currentImageProcessor.applyEPreparation(parseInt(document.getElementById('eMin').value), parseInt(document.getElementById('eMax').value));
+    brightnessHystogram.drawBrightnessHystogram(currentImageProcessor.getColorData());
+  });
 };
 
 let initImage = (imgIndex, elemId) => {
@@ -18,53 +54,10 @@ let initImage = (imgIndex, elemId) => {
     context.drawImage(imageObj, 0, 0);
     currentImageProcessor = new ImageProcessor(canvas);
 
-    document.getElementById('minFilterButton').addEventListener('click', (event) => {
-      currentImageProcessor.applyMinFilter();
-    });
-
-    document.getElementById('maxFilterButton').addEventListener('click', (event) => {
-      currentImageProcessor.applyMaxFilter();
-    });
-
-    document.getElementById('minMaxFilterButton').addEventListener('click', (event) => {
-      currentImageProcessor.applyMinMaxFilter();
-    });
-
-    document.getElementById('restoreImageButton').addEventListener('click', (event) => {
-      currentImageProcessor.restoreOriginalImage();
-    });
-
-    document.getElementById('dPreparationForm').addEventListener('submit', (event) => {
-      event.preventDefault();
-      currentImageProcessor.applyDPreparation(parseInt(document.getElementById('dMin').value), parseInt(document.getElementById('dMax').value));
-    });
-
-    document.getElementById('ePreparationForm').addEventListener('submit', (event) => {
-      event.preventDefault();
-      currentImageProcessor.applyEPreparation(parseInt(document.getElementById('eMin').value), parseInt(document.getElementById('eMax').value));
-    });
+    brightnessHystogram.drawBrightnessHystogram(currentImageProcessor.getColorData());
   };
 
   imageObj.src = '../../data/img' + imgIndex + '.jpg';
 };
-
-/*let drawChart = (sequence, chartName, labels, data) => {
-  let ctx = document.getElementById(chartName).getContext("2d"),
-      chart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [
-            {
-              label: "Lehmer sequence",
-              lineTension: 0.1,
-              backgroundColor: "rgba(75,192,192,0.4)",
-              borderColor: "rgba(75,192,192,1)",
-              data: data
-            }
-          ]
-        }
-      });
-};*/
 
 init();
