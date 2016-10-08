@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Image Processing</title>
+    <link href="stylesheets/style.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div class="navContainer">
+      <div class="inputContainer">
+        <span>Binarizing Limit = </span>
+        <input value="200" id="binarizingLimitInput"/>
+      </div>
+    </div>
+    <div class="navContainer">
+      <button class="navButton filterButton" id="recalculateButton">Recalculate</button>
+    </div>
+    <div class="mainContainer">
+      <span class="scroll leftScroll" id="nextImageScroll">&lt;</span>
+      <span class="scroll rightScroll" id="prevImageScroll">&gt;</span>
+      <div class="imageContainer">
+        <h2>Original Image</h2>
+        <canvas id="mainImage"></canvas>
+      </div>
+      <div class="imageContainer">
+        <h2>Binarized Image</h2>
+        <canvas id="binarizedImage"></canvas>
+      </div>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>
