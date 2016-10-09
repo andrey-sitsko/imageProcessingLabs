@@ -61,9 +61,10 @@ let loadImage = (imgName, canvas) => {
 
 let processImage = () => {
   let binarizingLimit = document.getElementById('binarizingLimitInput').value;
-  putImageData(currentImageProcessor.getBinarizedImage(binarizingLimit), document.getElementById('binarizedImage'));
+  currentImageProcessor.resetValues();
+  putImageData(currentImageProcessor.binarizeImage(binarizingLimit), document.getElementById('binarizedImage'));
   currentImageProcessor.restoreOriginalImageData();
-  currentImageProcessor.colorObjects(2);
+  currentImageProcessor.colorObjects();
 };
 
 let putImageData = (imageData, canvas) => {

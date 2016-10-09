@@ -1,3 +1,5 @@
+const ImageObject = require('./ImageObject.js');
+
 module.exports = class ImageProcessor {
   constructor(canvas) {
     this.canvas = canvas;
@@ -6,8 +8,13 @@ module.exports = class ImageProcessor {
     this.context = this.canvas.getContext('2d');
     this.imageData = this.context.getImageData(0, 0, this.canvas.width,  this.canvas.height);
     this.originalColorData = this.imageData.data.slice();
-    this.pictureMatrix = [];
-    this.maxColor = 0;
+    this.pixelMatrix = [];
+    this.imageObjects = [];
+  }
+
+  resetValues() {
+    this.pixelMatrix = [];
+    this.imageObjects = [];
   }
 
   getColorData() {
@@ -20,62 +27,79 @@ module.exports = class ImageProcessor {
     });
   }
 
-  getBinarizedImage(binarizingLimit) {
+
+  binarizeImage(binarizingLimit) {
     let imageData = this.imageData,
         colorData = this.imageData.data;
+
+    this.pixelMatrix = [];
 
     for(let i = 0; i < colorData.length; i += 4) {
       let pixelValue = (colorData[i] + colorData[i + 1] + colorData[i + 2]) / 3;
       if(pixelValue <= binarizingLimit) {
         colorData[i] = colorData[i + 1] = colorData[i + 2] = 0;
-        this.pictureMatrix.push(0);
+        this.pixelMatrix.push({
+          color: 0,
+          area: 0
+        });
       } else {
         colorData[i] = colorData[i + 1] = colorData[i + 2] = 255;
-        this.pictureMatrix.push(1);
+        this.pixelMatrix.push({
+          color: 1,
+          area: 0
+        });
       }
     }
     return imageData;
   }
 
-  colorObjects(definitionStep) {
-    let maxNumber = 0,
-        colorNumber = 1;
+  colorObjects() {
+    let colorNumber = 0,
+        pixelMatrix = this.pixelMatrix;
 
-    const colorData = this.imageData.data;
+    for(let stringIndex = 1; stringIndex < this.imageHeight; stringIndex++) {
+      for(let pixelIndex = 1; pixelIndex < this.imageWidth; pixelIndex++) {
+        if(pixelMatrix[stringIndex * this.imageWidth + pixelIndex].color !== 0) {
+          let prevStringPixel = pixelMatrix[(stringIndex - 1) * this.imageWidth + pixelIndex],
+              prevPixel = pixelMatrix[stringIndex * this.imageWidth + pixelIndex - 1];
 
-    for(let stringIndex = definitionStep; stringIndex < this.imageHeight - definitionStep; stringIndex++) {
-      for(let pixelIndex = definitionStep; pixelIndex < this.imageWidth - definitionStep; pixelIndex++) {
-        let currentPixel = this.pictureMatrix[stringIndex * this.imageWidth + pixelIndex];
-        if(currentPixel !== 0) {
-          maxNumber = currentPixel;
+          if(prevPixel.area === 0 && prevStringPixel.area === 0) {
+            //console.log(g);
+            debugger;
+            colorNumber++;
+            pixelMatrix[stringIndex * this.imageWidth + pixelIndex].area = colorNumber;
+          } else if(prevPixel.area === prevStringPixel.area && prevPixel.area !== 0) {
+            pixelMatrix[stringIndex * this.imageWidth + pixelIndex].area = prevStringPixel.area;
+          } else if(prevStringPixel.area !== 0 && prevPixel.area !== 0 && prevPixel.area !== prevStringPixel.area) {
+            pixelMatrix[stringIndex * this.imageWidth + pixelIndex].area = prevStringPixel.area;
 
-          for(let defPixString = stringIndex - definitionStep; defPixString < (stringIndex + definitionStep + 1); defPixString++) {
-            for(let defPixIndex = pixelIndex - definitionStep; defPixIndex < (pixelIndex + definitionStep + 1); defPixIndex++) {
-              let defPixel = this.pictureMatrix[definitionString * this.imageWidth + definitionPixel];
-              if(defPixel > maxNumber) {
-                maxNumber = defPixel;
-              }
-            }
-          }
-
-          colorNumber++;
-          for(let defPixString = stringIndex - definitionStep; defPixString < (stringIndex + definitionStep + 1); defPixString++) {
-            for(let defPixIndex = pixelIndex - definitionStep; defPixIndex < (pixelIndex + definitionStep + 1); defPixIndex++) {
-              let defPixel = this.pictureMatrix[defPixString * this.imageWidth + defPixIndex];
-              if(defPixel !== 0) {
-                if(maxNumber === 1) {
-                  this.pictureMatrix[defPixString * this.imageWidth + defPixIndex] = colorNumber;
-                } else {
-                  this.pictureMatrix[definitionString * this.imageWidth + defPixIndex] = maxNumber;
+            for(let defPixStringIndex = 1; defPixStringIndex <= stringIndex; defPixStringIndex++) {
+              for(let defPixIndex = 1; defPixIndex < this.imageWidth; defPixIndex++) {
+                if(defPixStringIndex === stringIndex && defPixIndex === pixelIndex) {
+                  break;
+                }
+                if(pixelMatrix[stringIndex * this.imageWidth + pixelIndex].area === prevPixel.area) {
+                  pixelMatrix[stringIndex * this.imageWidth + pixelIndex].area = prevStringPixel.area;
                 }
               }
             }
-          }
-
-          if(colorNumber > this.maxColor) {
-            this.maxColor = colorNumber;
+          } else if(prevPixel.area !== 0) {
+            pixelMatrix[stringIndex * this.imageWidth + pixelIndex].area = prevPixel.area;
+          } else if(prevStringPixel.area !==0) {
+            pixelMatrix[stringIndex * this.imageWidth + pixelIndex].area = prevStringPixel.area;
           }
         }
+      }
+    }
+    console.log(colorNumber);
+    //this.createImageObjects();
+  }
+
+  createImageObjects() {
+    for(let i = 0; i < this.imageHeight; i++) {
+      for(let j = 0; j < this.imageWidth; j++) {
+        let pixel = this.pixelMatrix[i * this.imageWidth + j];
+        this.imageObjects.push(new ImageObject(pixel));
       }
     }
   }
