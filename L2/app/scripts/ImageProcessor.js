@@ -54,7 +54,7 @@ module.exports = class ImageProcessor {
   }
 
   colorObjects() {
-    let colorNumber = 0,
+    let colorNumber = 1,
         pixelMatrix = this.pixelMatrix;
 
     for(let stringIndex = 1; stringIndex < this.imageHeight; stringIndex++) {
@@ -64,8 +64,8 @@ module.exports = class ImageProcessor {
               prevPixel = pixelMatrix[stringIndex * this.imageWidth + pixelIndex - 1];
 
           if(prevPixel.area === 0 && prevStringPixel.area === 0) {
-            //console.log(g);
             debugger;
+            //console.log(g);
             colorNumber++;
             pixelMatrix[stringIndex * this.imageWidth + pixelIndex].area = colorNumber;
           } else if(prevPixel.area === prevStringPixel.area && prevPixel.area !== 0) {
@@ -91,7 +91,18 @@ module.exports = class ImageProcessor {
         }
       }
     }
-    console.log(colorNumber);
+
+let counter = 0;
+
+    for(let stringIndex = 1; stringIndex < this.imageHeight; stringIndex++) {
+      for(let pixelIndex = 1; pixelIndex < this.imageWidth; pixelIndex++) {
+        if(pixelMatrix[(stringIndex) * this.imageWidth + pixelIndex].area !== 0) {
+          counter++;
+        }
+      }
+    }
+    console.log(`color number == ${colorNumber}`);
+    console.log(`coloured counter == ${counter}`);
     //this.createImageObjects();
   }
 
