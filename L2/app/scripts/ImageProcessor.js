@@ -1,4 +1,4 @@
-const ImageObject = require('./ImageObject.js');
+const FigureObject = require('./FigureObject.js');
 
 module.exports = class ImageProcessor {
   constructor(canvas) {
@@ -9,12 +9,7 @@ module.exports = class ImageProcessor {
     this.imageData = this.context.getImageData(0, 0, this.canvas.width,  this.canvas.height);
     this.originalColorData = this.imageData.data.slice();
     this.pixelMatrix = [];
-    this.imageObjects = [];
-  }
-
-  resetValues() {
-    this.pixelMatrix = [];
-    this.imageObjects = [];
+    this.figuresObjects = [];
   }
 
   getColorData() {
@@ -53,7 +48,7 @@ module.exports = class ImageProcessor {
     return imageData;
   }
 
-  colorObjects() {
+  calculateImageObjects() {
     let colorNumber = 0,
         pixelMatrix = this.pixelMatrix;
 
@@ -91,14 +86,71 @@ module.exports = class ImageProcessor {
         }
       }
     }
+
+    this._calculateFigures();
   }
 
-  createImageObjects() {
-    for(let i = 0; i < this.imageHeight; i++) {
-      for(let j = 0; j < this.imageWidth; j++) {
-        let pixel = this.pixelMatrix[i * this.imageWidth + j];
-        this.imageObjects.push(new ImageObject(pixel));
+  _calculateFigures() {
+    let uniqAreas = new Set(),
+        areasCount = {};
+
+    for(let stringIndex = 1; stringIndex < this.imageHeight; stringIndex++) {
+      for(let pixelIndex = 1; pixelIndex < this.imageWidth; pixelIndex++) {
+        let currentPixel = this.pixelMatrix[stringIndex * this.imageWidth + pixelIndex];
+        if (currentPixel.area !== 0) {
+          uniqAreas.add(currentPixel.area);
+          if(!areasCount[currentPixel.area]) {
+            areasCount[currentPixel.area] = 0;
+          }
+          areasCount[currentPixel.area]++;
+        }
       }
     }
+
+    this._createfiguresObjects(this.figuresObjects, uniqAreas);
+    this._calculateFiguresParams(this.figuresObjects, this.pixelMatrix, areasCount);
+  }
+
+  _createfiguresObjects(figuresObjects, uniqAreas) {
+    uniqAreas.forEach((area) => {
+      figuresObjects.push(new FigureObject(area));
+    });
+  }
+
+  _calculateFiguresParams(figuresObjects, pixelMatrix, areasCount) {
+
+    figuresObjects.forEach((figure) => {
+      figure.square = areasCount[figure.area];
+    });
+
+    for(let stringIndex = 1; stringIndex < this.imageHeight - 1; stringIndex++) {
+      for(let pixelIndex = 1; pixelIndex < this.imageWidth - 1; pixelIndex++) {
+        let prevStringPixel = pixelMatrix[(stringIndex - 1) * this.imageWidth + pixelIndex],
+            prevPixel = pixelMatrix[stringIndex * this.imageWidth + pixelIndex - 1],
+            nextStringPixel = pixelMatrix[(stringIndex + 1) * this.imageWidth + pixelIndex],
+            nextPixel = pixelMatrix[stringIndex * this.imageWidth + pixelIndex + 1],
+            currentPixel = pixelMatrix[stringIndex * this.imageWidth + pixelIndex];
+
+        if(currentPixel.area !== 0) {
+          figuresObjects.forEach((figure) => {
+              if(figure.area === currentPixel.area) {
+                if(prevPixel.area === 0 || prevStringPixel.area === 0 || nextPixel.area === 0 || nextStringPixel.area === 0) {
+                  figure.perimeter++;
+                }
+                figure.verticalDimensions += stringIndex;
+                figure.horizontalDimensions += pixelIndex;
+              }
+          });
+        }
+      }
+    }
+
+    figuresObjects.forEach((figure) => {
+      figure.density = +(Math.pow(figure.perimeter, 2) / figure.square).toFixed(2);
+      figure.staticMomentX = +(figure.horizontalDimensions / figure.square).toFixed(2);
+      figure.staticMomentY = +(figure.verticalDimensions / figure.square).toFixed(2);
+    });
+
+    console.log(figuresObjects);
   }
 };

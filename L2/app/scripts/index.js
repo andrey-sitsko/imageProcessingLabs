@@ -1,7 +1,7 @@
 const Chart = require('chart.js'),
       ImageProcessor = require('./ImageProcessor.js'),
       images = [
-        '1221.jpg',
+        '4.jpg',
         '2.jpg',
         '3.jpg',
         '4.jpg',
@@ -61,10 +61,9 @@ let loadImage = (imgName, canvas) => {
 
 let processImage = () => {
   let binarizingLimit = document.getElementById('binarizingLimitInput').value;
-  currentImageProcessor.resetValues();
   putImageData(currentImageProcessor.binarizeImage(binarizingLimit), document.getElementById('binarizedImage'));
   currentImageProcessor.restoreOriginalImageData();
-  currentImageProcessor.colorObjects();
+  currentImageProcessor.calculateImageObjects();
 };
 
 let putImageData = (imageData, canvas) => {
