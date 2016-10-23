@@ -54,56 +54,43 @@ module.exports = class ImageProcessor {
   }
 
   colorObjects() {
-    let colorNumber = 1,
+    let colorNumber = 0,
         pixelMatrix = this.pixelMatrix;
 
     for(let stringIndex = 1; stringIndex < this.imageHeight; stringIndex++) {
       for(let pixelIndex = 1; pixelIndex < this.imageWidth; pixelIndex++) {
         if(pixelMatrix[stringIndex * this.imageWidth + pixelIndex].color !== 0) {
           let prevStringPixel = pixelMatrix[(stringIndex - 1) * this.imageWidth + pixelIndex],
-              prevPixel = pixelMatrix[stringIndex * this.imageWidth + pixelIndex - 1];
+              prevPixel = pixelMatrix[stringIndex * this.imageWidth + pixelIndex - 1],
+              currentPixel = pixelMatrix[stringIndex * this.imageWidth + pixelIndex];
 
           if(prevPixel.area === 0 && prevStringPixel.area === 0) {
-            debugger;
-            //console.log(g);
             colorNumber++;
-            pixelMatrix[stringIndex * this.imageWidth + pixelIndex].area = colorNumber;
-          } else if(prevPixel.area === prevStringPixel.area && prevPixel.area !== 0) {
-            pixelMatrix[stringIndex * this.imageWidth + pixelIndex].area = prevStringPixel.area;
+            currentPixel.area = colorNumber;
+          } else if(prevStringPixel.area === prevPixel.area && prevPixel.area !== 0) {
+            currentPixel.area = prevStringPixel.area;
           } else if(prevStringPixel.area !== 0 && prevPixel.area !== 0 && prevPixel.area !== prevStringPixel.area) {
-            pixelMatrix[stringIndex * this.imageWidth + pixelIndex].area = prevStringPixel.area;
+            currentPixel.area = prevStringPixel.area;
 
             for(let defPixStringIndex = 1; defPixStringIndex <= stringIndex; defPixStringIndex++) {
               for(let defPixIndex = 1; defPixIndex < this.imageWidth; defPixIndex++) {
                 if(defPixStringIndex === stringIndex && defPixIndex === pixelIndex) {
                   break;
                 }
-                if(pixelMatrix[stringIndex * this.imageWidth + pixelIndex].area === prevPixel.area) {
-                  pixelMatrix[stringIndex * this.imageWidth + pixelIndex].area = prevStringPixel.area;
+                let defCurrentPixel = pixelMatrix[defPixStringIndex * this.imageWidth + defPixIndex];
+                if(defCurrentPixel.area === prevPixel.area) {
+                  defCurrentPixel.area = prevStringPixel.area;
                 }
               }
             }
           } else if(prevPixel.area !== 0) {
-            pixelMatrix[stringIndex * this.imageWidth + pixelIndex].area = prevPixel.area;
+            currentPixel.area = prevPixel.area;
           } else if(prevStringPixel.area !==0) {
-            pixelMatrix[stringIndex * this.imageWidth + pixelIndex].area = prevStringPixel.area;
+            currentPixel.area = prevStringPixel.area;
           }
         }
       }
     }
-
-let counter = 0;
-
-    for(let stringIndex = 1; stringIndex < this.imageHeight; stringIndex++) {
-      for(let pixelIndex = 1; pixelIndex < this.imageWidth; pixelIndex++) {
-        if(pixelMatrix[(stringIndex) * this.imageWidth + pixelIndex].area !== 0) {
-          counter++;
-        }
-      }
-    }
-    console.log(`color number == ${colorNumber}`);
-    console.log(`coloured counter == ${counter}`);
-    //this.createImageObjects();
   }
 
   createImageObjects() {

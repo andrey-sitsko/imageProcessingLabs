@@ -1,7 +1,7 @@
 const Chart = require('chart.js'),
       ImageProcessor = require('./ImageProcessor.js'),
       images = [
-        '4.jpg',
+        '1221.jpg',
         '2.jpg',
         '3.jpg',
         '4.jpg',
