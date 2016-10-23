@@ -63,7 +63,25 @@ let processImage = () => {
   let binarizingLimit = document.getElementById('binarizingLimitInput').value;
   putImageData(currentImageProcessor.binarizeImage(binarizingLimit), document.getElementById('binarizedImage'));
   currentImageProcessor.restoreOriginalImageData();
-  currentImageProcessor.calculateImageObjects();
+  currentImageProcessor.calculateImageFigures();
+  
+  document.getElementById('imageObjectsContainer').innerHTML = '';
+  currentImageProcessor.figuresObjects.forEach((figure) => {
+    addImageFigureInfo(figure);
+  });
+};
+
+let addImageFigureInfo = (figure) => {
+    var template = document.createElement('div');
+    template.innerHTML =
+      `<span>Square = ${figure.square}</span>` +
+      `<span>Perimeter = ${figure.perimeter}</span>` +
+      `<span>Density = ${figure.density}</span>` +
+      `<span>Static moment X = ${figure.staticMomentX}</span>` +
+      `<span>Static moment Y = ${figure.staticMomentY}</span>`;
+
+    template.classList.add('figureParams');
+    document.getElementById('imageObjectsContainer').appendChild(template);
 };
 
 let putImageData = (imageData, canvas) => {

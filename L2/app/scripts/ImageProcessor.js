@@ -48,7 +48,7 @@ module.exports = class ImageProcessor {
     return imageData;
   }
 
-  calculateImageObjects() {
+  calculateImageFigures() {
     let colorNumber = 0,
         pixelMatrix = this.pixelMatrix;
 
@@ -107,11 +107,11 @@ module.exports = class ImageProcessor {
       }
     }
 
-    this._createfiguresObjects(this.figuresObjects, uniqAreas);
+    this._createFiguresObjects(this.figuresObjects, uniqAreas);
     this._calculateFiguresParams(this.figuresObjects, this.pixelMatrix, areasCount);
   }
 
-  _createfiguresObjects(figuresObjects, uniqAreas) {
+  _createFiguresObjects(figuresObjects, uniqAreas) {
     uniqAreas.forEach((area) => {
       figuresObjects.push(new FigureObject(area));
     });
@@ -150,7 +150,5 @@ module.exports = class ImageProcessor {
       figure.staticMomentX = +(figure.horizontalDimensions / figure.square).toFixed(2);
       figure.staticMomentY = +(figure.verticalDimensions / figure.square).toFixed(2);
     });
-
-    console.log(figuresObjects);
   }
 };

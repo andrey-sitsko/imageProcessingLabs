@@ -127,3 +127,16 @@ input[type=number]::-webkit-outer-spin-button {
   display: inline-block;
   margin-right: 20px;
 }
+
+.figureParams {
+  display: inline-block;
+  margin: 10px 20px 20px 0;
+  border: 2px solid black;
+  padding: 7px 7px 0 7px;
+}
+
+.figureParams span {
+  display: block;
+  width: 100%;
+  margin-bottom: 5px;
+}
