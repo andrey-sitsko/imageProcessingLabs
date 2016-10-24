@@ -1,7 +1,6 @@
-const Chart = require('chart.js'),
-      ImageProcessor = require('./ImageProcessor.js'),
+const ImageProcessor = require('./ImageProcessor.js'),
       images = [
-        '4.jpg',
+        '11.jpg',
         '2.jpg',
         '3.jpg',
         '4.jpg',
@@ -72,6 +71,7 @@ let processImage = () => {
 };
 
 let addImageFigureInfo = (figure) => {
+    debugger;
     var template = document.createElement('div');
     template.innerHTML =
       `<span>Square = ${figure.square}</span>` +

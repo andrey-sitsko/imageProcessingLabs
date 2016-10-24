@@ -1,4 +1,5 @@
-const FigureObject = require('./FigureObject.js');
+const FigureObject = require('./FigureObject.js'),
+      figuresSquareLimit = 500;
 
 module.exports = class ImageProcessor {
   constructor(canvas) {
@@ -49,6 +50,30 @@ module.exports = class ImageProcessor {
   }
 
   calculateImageFigures() {
+    this._detectFiguresAreas();
+
+    let uniqAreas = new Set(),
+        areasCount = {};
+
+    for(let stringIndex = 1; stringIndex < this.imageHeight; stringIndex++) {
+      for(let pixelIndex = 1; pixelIndex < this.imageWidth; pixelIndex++) {
+        let currentPixel = this.pixelMatrix[stringIndex * this.imageWidth + pixelIndex];
+        if (currentPixel.area !== 0) {
+          uniqAreas.add(currentPixel.area);
+          if(!areasCount[currentPixel.area]) {
+            areasCount[currentPixel.area] = 0;
+          }
+          areasCount[currentPixel.area]++;
+        }
+      }
+    }
+
+    this.figuresObjects = this._createFiguresObjects(uniqAreas);
+    this._calculateFiguresParams(this.figuresObjects, this.pixelMatrix, areasCount);
+    this._clusterAnalysis();
+  }
+
+  _detectFiguresAreas() {
     let colorNumber = 0,
         pixelMatrix = this.pixelMatrix;
 
@@ -86,42 +111,28 @@ module.exports = class ImageProcessor {
         }
       }
     }
-
-    this._calculateFigures();
   }
 
-  _calculateFigures() {
-    let uniqAreas = new Set(),
-        areasCount = {};
-
-    for(let stringIndex = 1; stringIndex < this.imageHeight; stringIndex++) {
-      for(let pixelIndex = 1; pixelIndex < this.imageWidth; pixelIndex++) {
-        let currentPixel = this.pixelMatrix[stringIndex * this.imageWidth + pixelIndex];
-        if (currentPixel.area !== 0) {
-          uniqAreas.add(currentPixel.area);
-          if(!areasCount[currentPixel.area]) {
-            areasCount[currentPixel.area] = 0;
-          }
-          areasCount[currentPixel.area]++;
-        }
-      }
-    }
-
-    this._createFiguresObjects(this.figuresObjects, uniqAreas);
-    this._calculateFiguresParams(this.figuresObjects, this.pixelMatrix, areasCount);
+  _excludeSmallFigures(figuresObjects, squareLimit) {
+    return figuresObjects.filter((figure) => {
+      return figure.square >= squareLimit;
+    });
   }
 
-  _createFiguresObjects(figuresObjects, uniqAreas) {
+  _createFiguresObjects(uniqAreas) {
+    let figuresObjects = [];
     uniqAreas.forEach((area) => {
       figuresObjects.push(new FigureObject(area));
     });
+    return figuresObjects;
   }
 
   _calculateFiguresParams(figuresObjects, pixelMatrix, areasCount) {
-
     figuresObjects.forEach((figure) => {
       figure.square = areasCount[figure.area];
     });
+
+    figuresObjects = this._excludeSmallFigures(this.figuresObjects, figuresSquareLimit);
 
     for(let stringIndex = 1; stringIndex < this.imageHeight - 1; stringIndex++) {
       for(let pixelIndex = 1; pixelIndex < this.imageWidth - 1; pixelIndex++) {
@@ -150,5 +161,9 @@ module.exports = class ImageProcessor {
       figure.staticMomentX = +(figure.horizontalDimensions / figure.square).toFixed(2);
       figure.staticMomentY = +(figure.verticalDimensions / figure.square).toFixed(2);
     });
+  }
+
+  _clusterAnalysis() {
+
   }
 };
