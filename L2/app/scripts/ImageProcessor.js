@@ -148,6 +148,7 @@ module.exports = class ImageProcessor {
                 if(prevPixel.area === 0 || prevStringPixel.area === 0 || nextPixel.area === 0 || nextStringPixel.area === 0) {
                   figure.perimeter++;
                 }
+
                 figure.verticalDimensions += stringIndex;
                 figure.horizontalDimensions += pixelIndex;
               }
@@ -160,6 +161,31 @@ module.exports = class ImageProcessor {
       figure.density = +(Math.pow(figure.perimeter, 2) / figure.square).toFixed(2);
       figure.staticMomentX = +(figure.horizontalDimensions / figure.square).toFixed(2);
       figure.staticMomentY = +(figure.verticalDimensions / figure.square).toFixed(2);
+    });
+
+    this._calculateFiguresProlongation(figuresObjects, pixelMatrix);
+  }
+
+  _calculateFiguresProlongation(figuresObjects, pixelMatrix) {
+    for(let stringIndex = 1; stringIndex < this.imageHeight - 1; stringIndex++) {
+      for(let pixelIndex = 1; pixelIndex < this.imageWidth - 1; pixelIndex++) {
+        let currentPixel = pixelMatrix[stringIndex * this.imageWidth + pixelIndex];
+        if(currentPixel.area !== 0) {
+          figuresObjects.forEach((figure) => {
+            if(currentPixel.area === figure.area) {
+              figure.m20 += Math.pow((pixelIndex - figure.staticMomentX), 2);
+              figure.m02 += Math.pow((stringIndex - figure.staticMomentY), 2);
+              figure.m11 += (stringIndex - figure.staticMomentY) * (pixelIndex - figure.staticMomentX);
+            }
+          });
+        }
+      }
+    }
+
+    figuresObjects.forEach((figure) => {
+      debugger;
+      figure.elongation = ((figure.m20 + figure.m02 + Math.sqrt(Math.pow(figure.m20 - figure.m02, 2)) + 4 * Math.pow(figure.m11, 2)) /
+                          (figure.m20 + figure.m02 - Math.sqrt(Math.pow(figure.m20 - figure.m02, 2)) + 4 * Math.pow(figure.m11, 2)));
     });
   }
 
@@ -180,14 +206,6 @@ module.exports = class ImageProcessor {
 
     this.firstCluster = firstCluster;
     this.secondCluster = secondCluster;
-
-    console.log('cluster1 ==== ');
-    console.log(firstCluster);
-    console.log('cluster2 ==== ');
-    console.log(secondCluster);
-    //Object.assign(firstCluster.lastPoint, firstCluster.currentPoint);
-    //Object.assign(secondCluster.lastPoint, secondCluster.currentPoint);
-
   }
 
   _addFigureToCluster(cluster, figure) {

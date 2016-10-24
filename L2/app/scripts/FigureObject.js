@@ -8,5 +8,8 @@ module.exports = class FigureObject {
     this.density = 0;
     this.verticalDimensions = 0;
     this.horizontalDimensions = 0;
+    this.m20 = 0;
+    this.m02 = 0;
+    this.m11 = 0;
   }
 };

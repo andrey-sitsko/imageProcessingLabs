@@ -79,7 +79,8 @@ let addImageFigureInfo = (figure) => {
       `<span>Perimeter = ${figure.perimeter}</span>` +
       `<span>Density = ${figure.density}</span>` +
       `<span>Static moment X = ${figure.staticMomentX}</span>` +
-      `<span>Static moment Y = ${figure.staticMomentY}</span>`;
+      `<span>Static moment Y = ${figure.staticMomentY}</span>` +
+      `<span>Figure elongation = ${figure.elongation}</span>`;
 
     template.classList.add('figureParams');
     document.getElementById('imageObjectsContainer').appendChild(template);
