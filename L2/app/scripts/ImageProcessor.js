@@ -1,5 +1,8 @@
 const FigureObject = require('./FigureObject.js'),
-      figuresSquareLimit = 500;
+      Cluster = require('./Cluster.js'),
+      figuresSquareLimit = 400,
+      firstColor = [0, 204, 0],
+      secondColor = [255, 153, 0];
 
 module.exports = class ImageProcessor {
   constructor(canvas) {
@@ -11,18 +14,9 @@ module.exports = class ImageProcessor {
     this.originalColorData = this.imageData.data.slice();
     this.pixelMatrix = [];
     this.figuresObjects = [];
+    this.firstCluster = {};
+    this.secondCluster = {};
   }
-
-  getColorData() {
-    return this.imageData.data;
-  }
-
-  restoreOriginalImageData() {
-    this.imageData.data.forEach((elem, index, arr) => {
-      arr[index] = this.originalColorData[index];
-    });
-  }
-
 
   binarizeImage(binarizingLimit) {
     let imageData = this.imageData,
@@ -49,6 +43,12 @@ module.exports = class ImageProcessor {
     return imageData;
   }
 
+  restoreOriginalImageData() {
+    this.imageData.data.forEach((elem, index, arr) => {
+      arr[index] = this.originalColorData[index];
+    });
+  }
+
   calculateImageFigures() {
     this._detectFiguresAreas();
 
@@ -70,7 +70,7 @@ module.exports = class ImageProcessor {
 
     this.figuresObjects = this._createFiguresObjects(uniqAreas);
     this._calculateFiguresParams(this.figuresObjects, this.pixelMatrix, areasCount);
-    this._clusterAnalysis();
+    this._clusterAnalysis(this.figuresObjects);
   }
 
   _detectFiguresAreas() {
@@ -132,7 +132,7 @@ module.exports = class ImageProcessor {
       figure.square = areasCount[figure.area];
     });
 
-    figuresObjects = this._excludeSmallFigures(this.figuresObjects, figuresSquareLimit);
+    this.figuresObjects = this._excludeSmallFigures(this.figuresObjects, figuresSquareLimit);
 
     for(let stringIndex = 1; stringIndex < this.imageHeight - 1; stringIndex++) {
       for(let pixelIndex = 1; pixelIndex < this.imageWidth - 1; pixelIndex++) {
@@ -163,7 +163,79 @@ module.exports = class ImageProcessor {
     });
   }
 
-  _clusterAnalysis() {
+  _clusterAnalysis(figuresObjects) {
+    let firstCluster = new Cluster(0, 0, 0),
+        secondCluster = new Cluster(1000, 1000, 1000);
 
+    figuresObjects.forEach((figure) => {
+      let firstDistanse = this._calculateDistanse(firstCluster, figure),
+          secondDistanse = this._calculateDistanse(secondCluster, figure);
+
+      if(firstDistanse <= secondDistanse) {
+        this._addFigureToCluster(firstCluster, figure);
+      } else {
+        this._addFigureToCluster(secondCluster, figure);
+      }
+    });
+
+    this.firstCluster = firstCluster;
+    this.secondCluster = secondCluster;
+
+    console.log('cluster1 ==== ');
+    console.log(firstCluster);
+    console.log('cluster2 ==== ');
+    console.log(secondCluster);
+    //Object.assign(firstCluster.lastPoint, firstCluster.currentPoint);
+    //Object.assign(secondCluster.lastPoint, secondCluster.currentPoint);
+
+  }
+
+  _addFigureToCluster(cluster, figure) {
+    cluster.figures.push(figure);
+    cluster.perimeters.push(figure.perimeter);
+    cluster.squares.push(figure.square);
+    cluster.densities.push(figure.density);
+  }
+
+  _calculateDistanse(cluster, figure) {
+    let clusterCurrentPoint = cluster.currentPoint;
+    return Math.pow(
+      Math.pow(clusterCurrentPoint.square - figure.square, 2) +
+      Math.pow(clusterCurrentPoint.perimeter - figure.perimeter, 2) +
+      Math.pow(clusterCurrentPoint.density - figure.density, 2),
+    0.5);
+  }
+
+  colorObjects() {
+    let imageData = this.imageData,
+        colorData = this.imageData.data;
+
+    for(let stringIndex = 1; stringIndex < this.imageHeight; stringIndex++) {
+      for(let pixelIndex = 1; pixelIndex < this.imageWidth; pixelIndex++) {
+        let currentPixel = this.pixelMatrix[stringIndex * this.imageWidth + pixelIndex],
+            colorIndex = (stringIndex * this.imageWidth + pixelIndex) * 4;
+
+        if (currentPixel.area !== 0) {
+          this.firstCluster.figures.forEach((figure) => {
+            if(currentPixel.area === figure.area) {
+              this._colorPixel(colorData, colorIndex, firstColor);
+            }
+          });
+
+          this.secondCluster.figures.forEach((figure) => {
+            if(currentPixel.area === figure.area) {
+              this._colorPixel(colorData, colorIndex, secondColor);
+            }
+          });
+        }
+      }
+    }
+    return imageData;
+  }
+
+  _colorPixel(colorData, colorIndex, endColor) {
+    colorData[colorIndex] = endColor[0];
+    colorData[colorIndex + 1] = endColor[1];
+    colorData[colorIndex + 2] = endColor[2];
   }
 };

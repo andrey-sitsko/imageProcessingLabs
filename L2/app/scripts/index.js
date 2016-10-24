@@ -1,13 +1,14 @@
 const ImageProcessor = require('./ImageProcessor.js'),
       images = [
-        '11.jpg',
+        '1.jpg',
         '2.jpg',
         '3.jpg',
         '4.jpg',
         '5.jpg',
         '6.jpg',
         '7.jpg',
-        '8.jpg'
+        '8.jpg',
+        '9.jpg'
       ];
 
 let currentImageProcessor,
@@ -60,10 +61,11 @@ let loadImage = (imgName, canvas) => {
 
 let processImage = () => {
   let binarizingLimit = document.getElementById('binarizingLimitInput').value;
-  putImageData(currentImageProcessor.binarizeImage(binarizingLimit), document.getElementById('binarizedImage'));
   currentImageProcessor.restoreOriginalImageData();
+  putImageData(currentImageProcessor.binarizeImage(binarizingLimit), document.getElementById('binarizedImage'));
   currentImageProcessor.calculateImageFigures();
-  
+  putImageData(currentImageProcessor.colorObjects(), document.getElementById('coloredImage'));
+
   document.getElementById('imageObjectsContainer').innerHTML = '';
   currentImageProcessor.figuresObjects.forEach((figure) => {
     addImageFigureInfo(figure);
@@ -71,7 +73,6 @@ let processImage = () => {
 };
 
 let addImageFigureInfo = (figure) => {
-    debugger;
     var template = document.createElement('div');
     template.innerHTML =
       `<span>Square = ${figure.square}</span>` +
