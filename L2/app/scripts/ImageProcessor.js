@@ -1,8 +1,8 @@
 const FigureObject = require('./FigureObject.js'),
       Cluster = require('./Cluster.js'),
       figuresSquareLimit = 400,
-      firstColor = [0, 204, 0],
-      secondColor = [255, 153, 0];
+      firstColor = [0, 0, 204],
+      secondColor = [255, 0, 0];
 
 module.exports = class ImageProcessor {
   constructor(canvas) {
@@ -183,45 +183,59 @@ module.exports = class ImageProcessor {
     }
 
     figuresObjects.forEach((figure) => {
-      debugger;
-      figure.elongation = ((figure.m20 + figure.m02 + Math.sqrt(Math.pow(figure.m20 - figure.m02, 2)) + 4 * Math.pow(figure.m11, 2)) /
-                          (figure.m20 + figure.m02 - Math.sqrt(Math.pow(figure.m20 - figure.m02, 2)) + 4 * Math.pow(figure.m11, 2)));
+      figure.elongation = ((figure.m20 + figure.m02 + Math.sqrt(Math.pow(figure.m20 - figure.m02, 2) + 4 * Math.pow(figure.m11, 2))) /
+                          (figure.m20 + figure.m02 - Math.sqrt(Math.pow(figure.m20 - figure.m02, 2) + 4 * Math.pow(figure.m11, 2)))).toFixed(2);
     });
   }
 
   _clusterAnalysis(figuresObjects) {
-    let firstCluster = new Cluster(0, 0, 0),
-        secondCluster = new Cluster(1000, 1000, 1000);
+    let firstCluster,
+        secondCluster,
+        prevSecondSum = 0,
+        prevFirstSum = 0,
+        minSum,
+        sum = 0;
 
-    figuresObjects.forEach((figure) => {
-      let firstDistanse = this._calculateDistanse(firstCluster, figure),
-          secondDistanse = this._calculateDistanse(secondCluster, figure);
+    for(let firstClusterIndex = 0; firstClusterIndex < figuresObjects.length; firstClusterIndex++) {
+      for(let secondClusterIndex = 0; secondClusterIndex < figuresObjects.length; secondClusterIndex++) {
+        if(firstClusterIndex !== secondClusterIndex) {
+          let firstDistanse,
+              secondDistanse,
+              firstTempCluster = new Cluster(figuresObjects[firstClusterIndex]),
+              secondTempCluster = new Cluster(figuresObjects[secondClusterIndex]);
 
-      if(firstDistanse <= secondDistanse) {
-        this._addFigureToCluster(firstCluster, figure);
-      } else {
-        this._addFigureToCluster(secondCluster, figure);
+          figuresObjects.forEach((figure) => {
+            firstDistanse = this._calculateDistanse(firstTempCluster, figure);
+            secondDistanse = this._calculateDistanse(secondTempCluster, figure);
+
+            sum += (firstDistanse + secondDistanse);
+
+            if(firstDistanse <= secondDistanse) {
+              firstTempCluster.figures.push(figure);
+            } else {
+              secondTempCluster.figures.push(figure);
+            }
+
+            if(!minSum || sum < minSum) {
+              minSum = sum;
+              firstCluster = firstTempCluster;
+              secondCluster = secondTempCluster;
+            }
+          });
+        }
       }
-    });
+    }
 
     this.firstCluster = firstCluster;
     this.secondCluster = secondCluster;
   }
 
-  _addFigureToCluster(cluster, figure) {
-    cluster.figures.push(figure);
-    cluster.perimeters.push(figure.perimeter);
-    cluster.squares.push(figure.square);
-    cluster.densities.push(figure.density);
-  }
-
   _calculateDistanse(cluster, figure) {
     let clusterCurrentPoint = cluster.currentPoint;
-    return Math.pow(
+    return Math.sqrt(
       Math.pow(clusterCurrentPoint.square - figure.square, 2) +
       Math.pow(clusterCurrentPoint.perimeter - figure.perimeter, 2) +
-      Math.pow(clusterCurrentPoint.density - figure.density, 2),
-    0.5);
+      Math.pow(clusterCurrentPoint.density - figure.density, 2));
   }
 
   colorObjects() {

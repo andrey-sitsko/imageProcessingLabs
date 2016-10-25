@@ -1,13 +1,6 @@
 module.exports = class Cluster {
-  constructor(currentSquare, currentPerimeter, currentDensity) {
+  constructor(figure) {
     this.figures = [];
-    this.currentPoint = {};
-    this.lastPoint = {};
-    this.currentPoint.square = currentSquare;
-    this.currentPoint.perimeter = currentPerimeter;
-    this.currentPoint.density = currentDensity;
-    this.perimeters = [];
-    this.squares = [];
-    this.densities = [];
+    this.currentPoint = figure;
   }
 };

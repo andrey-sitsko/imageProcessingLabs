@@ -64,6 +64,7 @@ let processImage = () => {
   currentImageProcessor.restoreOriginalImageData();
   putImageData(currentImageProcessor.binarizeImage(binarizingLimit), document.getElementById('binarizedImage'));
   currentImageProcessor.calculateImageFigures();
+  currentImageProcessor.restoreOriginalImageData();
   putImageData(currentImageProcessor.colorObjects(), document.getElementById('coloredImage'));
 
   document.getElementById('imageObjectsContainer').innerHTML = '';
