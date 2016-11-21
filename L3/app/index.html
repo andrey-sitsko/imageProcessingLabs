@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Image Processing</title>
+    <link href="stylesheets/style.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div class="navContainer">
+      <div class="inputContainer">
+        <span>Binarizing Limit = </span>
+        <input value="110" id="binarizingLimitInput"/>
+      </div>
+    </div>
+    <div class="navContainer">
+      <button class="navButton filterButton" id="recalculateButton">Recalculate</button>
+    </div>
+    <div class="mainContainer">
+      <div class="imageContainer">
+        <h2>Colored Image</h2>
+        <canvas id="coloredImage"></canvas>
+      </div>
+      <div class="figuresParams">
+        <h3>Image figures:</h3>
+        <div id="imageObjectsContainer" class="imageObjectsContainer">
+        </div>
+      </div>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>
