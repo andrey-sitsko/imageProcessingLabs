@@ -107,7 +107,6 @@ module.exports = class HopfieldNetwork {
         counter++;
       }
     });
-    //console.log(counter / firstArr.length);
     return (counter / firstArr.length) < interferenceIndex;
   }
 };
