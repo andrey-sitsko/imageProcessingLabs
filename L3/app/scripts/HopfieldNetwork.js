@@ -1,24 +1,28 @@
+const interferenceIndex = 0.20;
+
 module.exports = class HopfieldNetwork {
   constructor() {
     this.imagesNeurons = [];
     this.figuresWeights = [];
-    this.imageFigures = [];
+    this.imagesFigures = [];
     this.imageWidth = 0;
   }
 
   addImage(image) {
     this.imageWidth = this.imageWidth || image.imageWidth;
     this.imagesNeurons.push(this._multiplyVectors(image.binariziedMatrix));
-    this.imageFigures.push(image.binariziedMatrix);
+    this.imagesFigures.push(image.binariziedMatrix);
   }
 
-  _calculateWeights() {
+  calculateWeights() {
     let neuronsCount = this.imagesNeurons[0].length;
 
-    for(let i = 0; i < neuronsCount; i++) {
-      if(i % this.imageWidth !== Math.floor(i / this.imageWidth)) {
-        this.figuresWeights[i] = this._getNeuronWeight(this.imagesNeurons, i);
-      } else {
+    for (let i = 0; i < neuronsCount; i++) {
+      this.figuresWeights[i] = this._getNeuronWeight(this.imagesNeurons, i);
+    }
+
+    for (let i = 0; i < neuronsCount; i++) {
+      if (i % this.imageWidth === Math.floor(i / this.imageWidth)) {
         this.figuresWeights[i] = 0;
       }
     }
@@ -36,9 +40,11 @@ module.exports = class HopfieldNetwork {
     let finalMatrix = [];
 
     figureMatrix.forEach((firstElement) => {
+      let summ = 0;
       figureMatrix.forEach((secondElement) => {
-        finalMatrix.push(firstElement * secondElement);
+        summ += firstElement * secondElement;
       });
+      finalMatrix.push(summ);
     });
 
     return finalMatrix;
@@ -47,28 +53,25 @@ module.exports = class HopfieldNetwork {
   recogniseImage(image) {
     let imageMatrix = image.binariziedMatrix,
         currentMatrix,
-        prevMatrix;
+        prevMatrix,
+        counter = 0;
 
-    currentMatrix = prevMatrix = imageMatrix;
+    currentMatrix = imageMatrix;
 
     do {
-      prevMatrix = imageMatrix;
-      currentMatrix = this._getImageSumMatrix(this.figuresWeights, imageMatrix);
-    } while (!this._checkArraysEquality(currentMatrix, prevMatrix));
+      counter++;
+      prevMatrix = currentMatrix;
+      currentMatrix = this._getImageMultMatrix(this.figuresWeights, currentMatrix);
+    } while (this._checkArraysEquality(currentMatrix, prevMatrix));
+
+    return this._findStandart(this.imagesFigures, currentMatrix);
   }
 
-  _checkArraysEquality(firstArr, secondArr) {
-    return (firstArr.length == secondArr.length &&
-    firstArr.every((elem, index) => {
-      return elem === secondArr[index];
-    }));
-  }
-
-  _getImageSumMatrix(weights, imageMatrix) {
+  _getImageMultMatrix(weights, imageMatrix) {
     let finalMatrix = [];
 
     for(let i = 0; i < weights.length; i++) {
-      finalMatrix[i] += weights[i] * imageMatrix[i];
+      finalMatrix.push(weights[i] * imageMatrix[i]);
     }
 
     return finalMatrix.map((elem) => {
@@ -78,5 +81,33 @@ module.exports = class HopfieldNetwork {
         return -1;
       }
     });
+  }
+
+  _findStandart(standards, image) {
+    let recognisied = false;
+    standards.forEach((standart) => {
+      if(this._checkImagesEquality(standart, image)) {
+        recognisied = true;
+      }
+    });
+    return recognisied;
+  }
+
+  _checkArraysEquality(firstArr, secondArr) {
+    return (firstArr.length == secondArr.length &&
+    firstArr.every((elem, index) => {
+      return elem === secondArr[index];
+    }));
+  }
+
+  _checkImagesEquality(firstArr, secondArr) {
+    let counter = 0;
+    firstArr.forEach((elem, index) => {
+      if(elem !== secondArr[index]) {
+        counter++;
+      }
+    });
+    //console.log(counter / firstArr.length);
+    return (counter / firstArr.length) < interferenceIndex;
   }
 };
